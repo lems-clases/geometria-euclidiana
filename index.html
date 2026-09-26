@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometría Euclidiana — Unidad 2</title>
+<style>
+    :root{
+        --azul:#1e3a8a;
+        --azul2:#2563eb;
+        --celeste:#eff6ff;
+        --fondo:#f1f5f9;
+        --tarjeta:#ffffff;
+        --texto:#1f2937;
+        --gris:#64748b;
+        --borde:#dbeafe;
+        --acento:#f59e0b;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    html{scroll-behavior:smooth;}
+
+    body{
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+        background:var(--fondo);
+        color:var(--texto);
+        line-height:1.7;
+    }
+
+    /* ---------- ENCABEZADO ---------- */
+    header{
+        background:linear-gradient(135deg,var(--azul),var(--azul2));
+        color:#fff;
+        padding:3rem 1.25rem 2.5rem;
+        text-align:center;
+    }
+    header h1{font-size:clamp(1.6rem,4vw,2.5rem);margin-bottom:.5rem;}
+    header p{max-width:720px;margin:0 auto;opacity:.95;}
+    header .etiqueta{
+        display:inline-block;
+        background:rgba(255,255,255,.18);
+        border:1px solid rgba(255,255,255,.35);
+        border-radius:999px;
+        padding:.25rem .9rem;
+        font-size:.8rem;
+        letter-spacing:.5px;
+        text-transform:uppercase;
+        margin-bottom:1rem;
+    }
+
+    /* ---------- NAVEGACIÓN ---------- */
+    nav.menu{
+        position:sticky;
+        top:0;
+        z-index:100;
+        background:#fff;
+        border-bottom:1px solid var(--borde);
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+        padding:.5rem;
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:.35rem;
+    }
+    nav.menu a{
+        color:var(--azul);
+        text-decoration:none;
+        font-size:.85rem;
+        font-weight:600;
+        padding:.4rem .75rem;
+        border-radius:999px;
+        transition:background .2s,color .2s;
+        white-space:nowrap;
+    }
+    nav.menu a:hover,nav.menu a:focus{
+        background:var(--azul);
+        color:#fff;
+    }
+
+    /* ---------- CONTENEDOR ---------- */
+    main{
+        max-width:960px;
+        margin:0 auto;
+        padding:1.5rem 1rem 3rem;
+    }
+
+    section{
+        background:var(--tarjeta);
+        border:1px solid var(--borde);
+        border-radius:1rem;
+        padding:1.75rem;
+        margin-bottom:1.75rem;
+        box-shadow:0 2px 10px rgba(0,0,0,.04);
+        scroll-margin-top:90px;
+    }
+
+    h2{
+        color:var(--azul);
+        font-size:clamp(1.25rem,2.5vw,1.6rem);
+        margin-bottom:1rem;
+        padding-bottom:.4rem;
+        border-bottom:3px solid var(--borde);
+    }
+    h3{
+        color:var(--azul2);
+        font-size:1.1rem;
+        margin:1.25rem 0 .5rem;
+    }
+    h4{
+        font-size:1rem;
+        margin:1rem 0 .35rem;
+        color:var(--texto);
+    }
+    p{margin-bottom:.75rem;}
+    ul,ol{padding-left:1.4rem;margin-bottom:.75rem;}
+    li{margin-bottom:.35rem;}
+    strong{color:#0f172a;}
+    em{color:var(--gris);}
+
+    /* ---------- ÍNDICE DE TARJETAS ---------- */
+    .tarjetas{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+        gap:.85rem;
+        margin-top:1rem;
+    }
+    .tarjetas a{
+        display:block;
+        background:var(--celeste);
+        border:1px solid var(--borde);
+        border-radius:.75rem;
+        padding:.9rem 1rem;
+        text-decoration:none;
+        color:var(--azul);
+        font-weight:600;
+        font-size:.9rem;
+        transition:transform .15s,box-shadow .15s,background .15s;
+    }
+    .tarjetas a:hover{
+        transform:translateY(-3px);
+        box-shadow:0 6px 14px rgba(30,58,138,.15);
+        background:#e0edff;
+    }
+    .tarjetas a span{
+        display:block;
+        font-weight:400;
+        font-size:.78rem;
+        color:var(--gris);
+        margin-top:.15rem;
+    }
+
+    /* ---------- CAJAS ESPECIALES ---------- */
+    .formula{
+        display:block;
+        background:var(--celeste);
+        border-left:4px solid var(--azul2);
+        border-radius:0 .5rem .5rem 0;
+        padding:.75rem 1rem;
+        margin:.75rem 0;
+        font-family:"Cambria Math","Times New Roman",serif;
+        font-size:1.15rem;
+        text-align:center;
+        overflow-x:auto;
+    }
+    .ejemplo{
+        background:#f8fafc;
+        border-left:4px solid var(--acento);
+        border-radius:0 .5rem .5rem 0;
+        padding:.85rem 1rem;
+        margin:.85rem 0;
+    }
+    .ejemplo strong{color:#b45309;}
+    .nota{
+        background:#fffbeb;
+        border:1px dashed #fcd34d;
+        border-radius:.6rem;
+        padding:.85rem 1rem;
+        margin:.85rem 0;
+        font-size:.95rem;
+    }
+
+    /* ---------- TABLAS ---------- */
+    .tabla-scroll{overflow-x:auto;margin:.75rem 0;}
+    table{
+        width:100%;
+        border-collapse:collapse;
+        font-size:.92rem;
+        min-width:420px;
+    }
+    th,td{
+        border:1px solid var(--borde);
+        padding:.6rem .75rem;
+        text-align:left;
+        vertical-align:top;
+    }
+    th{
+        background:var(--celeste);
+        color:var(--azul);
+        font-weight:700;
+    }
+    tbody tr:nth-child(even){background:#f8fafc;}
+
+    /* ---------- CRIBA ---------- */
+    .criba{
+        display:grid;
+        grid-template-columns:repeat(10,1fr);
+        gap:4px;
+        max-width:460px;
+        margin:.75rem 0;
+        font-size:.85rem;
+    }
+    .criba span{
+        text-align:center;
+        padding:.35rem 0;
+        border-radius:.35rem;
+        background:#f1f5f9;
+        color:#94a3b8;
+    }
+    .criba span.primo{
+        background:var(--azul2);
+        color:#fff;
+        font-weight:700;
+    }
+
+    /* ---------- LÍNEA DE TIEMPO ---------- */
+    .timeline{
+        list-style:none;
+        padding-left:0;
+        border-left:3px solid var(--borde);
+        margin-left:.5rem;
+    }
+    .timeline li{
+        position:relative;
+        padding:0 0 1.1rem 1.5rem;
+    }
+    .timeline li::before{
+        content:"";
+        position:absolute;
+        left:-9px;
+        top:.55rem;
+        width:13px;
+        height:13px;
+        border-radius:50%;
+        background:var(--azul2);
+        border:2px solid #fff;
+        box-shadow:0 0 0 2px var(--borde);
+    }
+    .timeline .fecha{
+        display:block;
+        font-weight:700;
+        color:var(--azul);
+        font-size:.9rem;
+    }
+
+    /* ---------- ENLACES ---------- */
+    a.enlace{
+        color:var(--azul2);
+        text-decoration:none;
+        border-bottom:1px dotted var(--azul2);
+        font-weight:600;
+    }
+    a.enlace:hover{color:var(--azul);border-bottom-style:solid;}
+
+    .volver{
+        display:inline-block;
+        margin-top:.75rem;
+        font-size:.82rem;
+        color:var(--gris);
+        text-decoration:none;
+        font-weight:600;
+    }
+    .volver:hover{color:var(--azul2);}
+
+    /* ---------- BOTÓN SUBIR ---------- */
+    #subir{
+        position:fixed;
+        bottom:1.25rem;
+        right:1.25rem;
+        width:46px;
+        height:46px;
+        border-radius:50%;
+        background:var(--azul);
+        color:#fff;
+        border:none;
+        font-size:1.25rem;
+        cursor:pointer;
+        box-shadow:0 4px 12px rgba(30,58,138,.35);
+        transition:background .2s,transform .2s;
+        z-index:200;
+    }
+    #subir:hover{background:var(--azul2);transform:translateY(-3px);}
+
+    /* ---------- PIE ---------- */
+    footer{
+        background:#0f172a;
+        color:#cbd5e1;
+        text-align:center;
+        padding:1.75rem 1rem;
+        font-size:.85rem;
+    }
+    footer a{color:#93c5fd;text-decoration:none;}
+    footer a:hover{text-decoration:underline;}
+
+    @media (max-width:600px){
+        section{padding:1.15rem;}
+        .criba{grid-template-columns:repeat(5,1fr);}
+    }
+</style>
+</head>
+<body>
+
+<!-- ================= ENCABEZADO ================= -->
+<header id="inicio">
+    <span class="etiqueta">Unidad 2 · Matemáticas</span>
+    <h1>Geometría Euclidiana</h1>
+    <p>De Tales de Mileto a Eratóstenes de Cirene: el nacimiento del razonamiento deductivo,
+       el método axiomático y la medición del planeta con pura geometría.</p>
+</header>
+
+<!-- ================= MENÚ ================= -->
+<nav class="menu" aria-label="Navegación principal">
+    <a href="#introduccion">Introducción</a>
+    <a href="#tales">Tales</a>
+    <a href="#pitagoras">Pitágoras</a>
+    <a href="#euclides">Euclides</a>
+    <a href="#eratostenes">Eratóstenes</a>
+    <a href="#glosario">Glosario</a>
+    <a href="#conceptos">Conceptos clave</a>
+    <a href="#biografias">Biografías</a>
+    <a href="#linea">Línea de tiempo</a>
+    <a href="#recursos">Recursos</a>
+</nav>
+
+<main>
+
+<!-- ================= INTRODUCCIÓN ================= -->
+<section id="introduccion">
+    <h2>Introducción: ¿qué es la geometría euclidiana?</h2>
+    <p>La <strong>geometría euclidiana</strong> es el sistema geométrico basado en los
+       <a class="enlace" href="#postulados">cinco postulados de Euclides</a>, válido en el plano
+       y en el espacio «plano» (no curvo). Durante más de 2000 años fue <em>la</em> geometría:
+       el modelo de lo que significa razonar matemáticamente.</p>
+
+    <p>Pero no nació de golpe. Fue el resultado del trabajo encadenado de cuatro pensadores griegos:</p>
+
+    <div class="tarjetas">
+        <a href="#tales">Tales de Mileto<span>c. 624–546 a. C. · Semejanza y deducción</span></a>
+        <a href="#pitagoras">Pitágoras de Samos<span>c. 570–495 a. C. · Geometría y números</span></a>
+        <a href="#euclides">Euclides de Alejandría<span>c. 325–265 a. C. · Los Elementos</span></a>
+        <a href="#eratostenes">Eratóstenes de Cirene<span>c. 276–194 a. C. · Medir la Tierra</span></a>
+    </div>
+
+    <div class="nota">
+        <strong>Idea central:</strong> Tales introduce la <em>demostración racional</em>;
+        Pitágoras vincula <em>geometría y números</em>; Euclides <em>organiza y sistematiza</em>
+        todo el saber en un cuerpo axiomático; y Eratóstenes <em>aplica</em> esos principios
+        a un problema científico real: medir el planeta.
+    </div>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= TALES ================= -->
+<section id="tales">
+    <h2>1. Tales de Mileto (c. 624 – 546 a. C.)</h2>
+    <p>Considerado el primer filósofo y matemático de la tradición griega y fundador de la
+       <strong>escuela jónica</strong>. Nació en Mileto (Asia Menor, actual Turquía) y viajó a Egipto,
+       donde entró en contacto con la geometría y la astronomía de los sacerdotes egipcios.
+       Su importancia radica en haber transformado las matemáticas de un conjunto de
+       <em>reglas prácticas</em> en una disciplina basada en la <strong>razón</strong>.</p>
+
+    <h3>1.1 Razonamiento deductivo en geometría</h3>
+    <p>Antes de Tales, el conocimiento geométrico era esencialmente <strong>empírico</strong>:
+       se aceptaban relaciones porque «funcionaban» en la práctica (medición de tierras, construcción).
+       Tales propuso algo distinto: <strong>justificar las afirmaciones mediante argumentos lógicos</strong>,
+       partiendo de principios evidentes para llegar a conclusiones necesarias.</p>
+    <ul>
+        <li>Sembró las bases del <strong>método deductivo</strong>, que después Euclides sistematizaría en <em>Los Elementos</em>.</li>
+        <li>Se le atribuyen demostraciones como: el círculo es dividido en dos partes iguales por su diámetro,
+            los ángulos de la base de un triángulo isósceles son iguales, y los ángulos opuestos por el vértice son iguales.</li>
+    </ul>
+
+    <h3 id="teorema-tales">1.2 Teorema de Tales</h3>
+    <p>Si dos o más rectas paralelas son cortadas por rectas transversales, los segmentos que se forman
+       son <strong>proporcionales</strong>:</p>
+    <div class="formula">AB / BC = A′B′ / B′C′</div>
+    <p>Es la base de conceptos posteriores como la <strong>semejanza de triángulos</strong> y el
+       teorema de la paralela media, fundamentales en geometría analítica y trigonometría.</p>
+
+    <div class="ejemplo">
+        <strong>Ejemplo resuelto.</strong> Tres rectas paralelas son cortadas por dos transversales.
+        Sobre la primera, AB = 3 cm y BC = 5 cm. Sobre la segunda, A′B′ = 6 cm. ¿Cuánto mide B′C′?<br><br>
+        Aplicando la proporcionalidad: 3 / 5 = 6 / B′C′ → <strong>B′C′ = (6 × 5) / 3 = 10 cm</strong>
+    </div>
+
+    <p><strong>Aplicación cotidiana:</strong> este mismo principio se usa para dividir un segmento en
+       partes iguales con regla y líneas paralelas, técnica común en <em>dibujo técnico</em>.</p>
+
+    <h3>1.3 Cálculo de la altura de las pirámides</h3>
+    <p>Tales midió la sombra de un bastón de altura conocida en el mismo instante en que medía la sombra
+       de la pirámide. Al coincidir el ángulo de incidencia del sol, estableció una relación de
+       semejanza de triángulos:</p>
+    <div class="formula">h(bastón) / sombra(bastón) = h(pirámide) / sombra(pirámide)</div>
+    <p>Demostró así la aplicación práctica de la proporcionalidad geométrica para resolver
+       <strong>problemas de medición indirecta</strong>, sin necesidad de acceso físico al objeto.</p>
+
+    <h3>1.4 Predicción de un eclipse solar</h3>
+    <p>Se le atribuye la predicción del eclipse solar del <strong>28 de mayo de 585 a. C.</strong>,
+       posiblemente basándose en ciclos astronómicos (como el ciclo de Saros, conocido por los babilonios).
+       Esto implicó un cambio de paradigma: los fenómenos naturales no son caóticos ni exclusivamente
+       obra de los dioses, sino que siguen <strong>patrones matemáticos calculables y predecibles</strong>.</p>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= PITÁGORAS ================= -->
+<section id="pitagoras">
+    <h2>2. Pitágoras de Samos (c. 570 – 495 a. C.)</h2>
+    <p>Nació en la isla de Samos y, tras viajar por Egipto y posiblemente Babilonia, se estableció en
+       <strong>Crotona</strong> (sur de Italia), donde fundó una escuela filosófico-religiosa: los
+       <strong>pitagóricos</strong>. Esta comunidad consideraba que los números eran la esencia de
+       todas las cosas y practicaba un modo de vida basado en normas éticas, matemáticas y místicas.</p>
+
+    <h3>2.1 Teorema de Pitágoras</h3>
+    <p>En todo triángulo rectángulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados
+       de los catetos:</p>
+    <div class="formula">a² + b² = c²</div>
+    <p>Babilonios y egipcios ya conocían casos particulares (como el triángulo <strong>3-4-5</strong>,
+       usado para trazar ángulos rectos en construcción). La aportación de la escuela pitagórica fue
+       ofrecer una <strong>demostración general</strong>, válida para cualquier triángulo rectángulo.</p>
+
+    <div class="ejemplo">
+        <strong>Ejemplo.</strong> Un triángulo rectángulo tiene catetos a = 6 y b = 8. ¿Cuánto mide la hipotenusa?<br>
+        c = √(6² + 8²) = √(36 + 64) = √100 = <strong>10</strong>
+    </div>
+
+    <h3>2.2 Estudio de los números y sus propiedades</h3>
+    <p>Los pitagóricos clasificaron los números según sus propiedades, iniciando lo que hoy conocemos
+       como <strong>teoría de números</strong>:</p>
+    <ul>
+        <li><strong>Pares e impares:</strong> según sean o no divisibles entre 2. Ejemplo: 8 es par (8 = 2×4); 7 es impar.</li>
+        <li><strong>Números primos:</strong> divisibles solo entre 1 y sí mismos. Ejemplo: 2, 3, 5, 7, 11, 13…</li>
+        <li><strong>Números perfectos:</strong> iguales a la suma de sus divisores propios. Ejemplo: 6 = 1+2+3; el siguiente es 28 = 1+2+4+7+14.</li>
+        <li><strong>Números figurados:</strong> representables geométricamente con arreglos de puntos.
+            Triangulares: 1, 3, 6, 10… (suma 1+2+3+…+n); cuadrados: 1, 4, 9, 16… (n²).</li>
+    </ul>
+
+    <h3>2.3 Relaciones numéricas en la música</h3>
+    <p>Pitágoras observó que al dividir una cuerda vibrante en proporciones simples se obtenían
+       intervalos musicales armoniosos:</p>
+    <ul>
+        <li>Razón <strong>2:1</strong> → intervalo de <strong>octava</strong>.</li>
+        <li>Razón <strong>3:2</strong> → intervalo de <strong>quinta</strong>.</li>
+        <li>Razón <strong>4:3</strong> → intervalo de <strong>cuarta</strong>.</li>
+    </ul>
+    <div class="ejemplo">
+        <strong>Ejemplo.</strong> Una cuerda de 60 cm produce una nota base. Si se pulsa a 30 cm (razón 2:1),
+        suena una octava más alta; a 40 cm (razón 3:2 respecto a 60), suena una quinta.
+    </div>
+
+    <h3>2.4 Descubrimiento de los números irracionales</h3>
+    <p>Al aplicar su propio teorema a un cuadrado de lado 1, la diagonal resulta:</p>
+    <div class="formula">d = √(1² + 1²) = √2 ≈ 1,4142…</div>
+    <p>Los pitagóricos intentaron expresar √2 como razón de dos enteros, pues creían que toda magnitud
+       debía representarse así. Se demostró que era imposible: √2 <strong>no puede escribirse como fracción</strong>,
+       es decir, es un <strong>número irracional</strong>. Este hallazgo representó una crisis filosófica
+       para la escuela, pero abrió el camino al estudio de los irracionales.</p>
+
+    <h3 id="ternas">2.5 Ternas pitagóricas</h3>
+    <p>Una <strong>terna pitagórica</strong> es un conjunto de tres números enteros positivos
+       (a, b, c) que satisfacen a² + b² = c², es decir, que pueden ser los lados de un triángulo
+       rectángulo con medidas enteras.</p>
+
+    <ul>
+        <li><strong>Ternas primitivas</strong> más conocidas: (3,4,5), (5,12,13), (8,15,17), (7,24,25).
+            Son primitivas cuando no tienen divisores comunes distintos de 1.</li>
+        <li><strong>Ternas derivadas o secundarias:</strong> a partir de una primitiva se generan infinitas
+            multiplicando por un mismo factor: (3,4,5)×2 = (6,8,10); ×3 = (9,12,15).</li>
+    </ul>
+
+    <p><strong>Fórmula de Euclides</strong> para generar ternas: dados dos enteros m &gt; n &gt; 0,</p>
+    <div class="formula">a = m² − n² &nbsp;&nbsp;&nbsp; b = 2mn &nbsp;&nbsp;&nbsp; c = m² + n²</div>
+
+    <div class="ejemplo">
+        <strong>Ejemplo 1 — Verificación.</strong> ¿Es (5, 12, 13) una terna pitagórica?<br>
+        5² + 12² = 25 + 144 = 169 = 13² ✔<br><br>
+        <strong>Ejemplo 2 — Generación con Euclides.</strong> Con m = 2, n = 1:<br>
+        a = 2² − 1² = 3 &nbsp;·&nbsp; b = 2(2)(1) = 4 &nbsp;·&nbsp; c = 2² + 1² = 5 → <strong>(3, 4, 5)</strong>
+    </div>
+
+    <div class="nota">
+        <strong>Aplicación práctica:</strong> los antiguos egipcios usaban cuerdas con nudos en proporción
+        3-4-5 (los <em>«tensadores de cuerdas»</em>) para trazar ángulos rectos exactos en construcción,
+        sin necesidad de instrumentos de medición angular.
+    </div>
+
+    <h3>2.6 Las matemáticas como orden del universo</h3>
+    <p>Para los pitagóricos, el universo (<em>kosmos</em>) estaba regido por relaciones numéricas
+       armoniosas, idea resumida en <strong>«todo es número»</strong>. Esta concepción vinculó la matemática
+       con la música, la astronomía y la filosofía, e impulsó la búsqueda de patrones numéricos
+       subyacentes a los fenómenos naturales, principio que sigue vigente en la ciencia moderna.</p>
+    <p><strong>Relevancia:</strong> Pitágoras y su escuela consolidaron la idea de que las matemáticas
+       no son solo una herramienta de cálculo, sino un <strong>lenguaje capaz de describir, explicar y
+       encontrar orden</strong> en fenómenos tan diversos como la geometría, la música y el cosmos.</p>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= EUCLIDES ================= -->
+<section id="euclides">
+    <h2>3. Euclides de Alejandría (c. 325 – 265 a. C.)</h2>
+    <p>Matemático griego que trabajó en Alejandría durante el reinado de Ptolomeo I. Se conocen pocos
+       datos de su vida, pero su obra lo convirtió en el <strong>«padre de la geometría»</strong>.</p>
+
+    <h3>3.1 Los Elementos</h3>
+    <p><em>Los Elementos</em> es un tratado de <strong>trece libros</strong> que reúne y ordena casi todo
+       el conocimiento matemático griego de su época. Ha sido, después de la Biblia, una de las obras
+       más editadas de la historia, y fue el texto base de la enseñanza de la geometría durante más de
+       2000 años. Su mérito principal no es haber descubierto todos los resultados que contiene, sino
+       haberlos presentado en un <strong>orden lógico</strong>, donde cada proposición se apoya en las anteriores.</p>
+
+    <div class="tabla-scroll">
+        <table>
+            <thead>
+                <tr><th>Libros</th><th>Contenido principal</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Libros I–IV</td>
+                    <td>Geometría plana: triángulos, paralelas, áreas, círculos y polígonos regulares.
+                        El Libro I culmina con el teorema de Pitágoras (I.47).</td>
+                </tr>
+                <tr>
+                    <td>Libro V</td>
+                    <td>Teoría de las proporciones (atribuida a Eudoxo), aplicable a magnitudes
+                        conmensurables e inconmensurables.</td>
+                </tr>
+                <tr>
+                    <td>Libro VI</td>
+                    <td>Semejanza de figuras y aplicación de las proporciones a la geometría.</td>
+                </tr>
+                <tr>
+                    <td>Libros VII–IX</td>
+                    <td>Teoría de números: divisibilidad, algoritmo de Euclides, números primos
+                        y números perfectos.</td>
+                </tr>
+                <tr>
+                    <td>Libro X</td>
+                    <td>Clasificación de magnitudes irracionales (segmentos inconmensurables).</td>
+                </tr>
+                <tr>
+                    <td>Libros XI–XIII</td>
+                    <td>Geometría del espacio; terminan con la construcción de los cinco sólidos regulares.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>3.2 El método axiomático</h3>
+    <p>Euclides inicia el Libro I con tres tipos de enunciados que <strong>no se demuestran</strong>
+       y sirven de punto de partida:</p>
+    <ul>
+        <li><strong>Definiciones:</strong> explican los objetos de estudio (punto, línea, ángulo, círculo, etc.).</li>
+        <li><strong>Postulados:</strong> supuestos propios de la geometría, por ejemplo, que se puede
+            trazar una recta entre dos puntos.</li>
+        <li><strong>Nociones comunes (axiomas):</strong> verdades generales aplicables a cualquier magnitud,
+            como «el todo es mayor que la parte» o «cosas iguales a una misma cosa son iguales entre sí».</li>
+    </ul>
+
+    <h3 id="postulados">3.3 Los cinco postulados</h3>
+    <p>Expresados en lenguaje actual:</p>
+    <ol>
+        <li>Por dos puntos distintos pasa una recta (se puede trazar una recta entre ellos).</li>
+        <li>Todo segmento se puede prolongar indefinidamente en línea recta.</li>
+        <li>Se puede trazar una circunferencia con cualquier centro y cualquier radio.</li>
+        <li>Todos los ángulos rectos son iguales entre sí.</li>
+        <li><strong>Postulado de las paralelas:</strong> si una recta corta a otras dos y los ángulos
+            internos del mismo lado suman menos de dos rectos, las dos rectas se cortan de ese lado
+            si se prolongan lo suficiente.</li>
+    </ol>
+    <p>El quinto postulado suele enunciarse en la forma equivalente de <strong>Playfair</strong>:
+       <em>por un punto exterior a una recta pasa una única paralela a ella</em>.</p>
+    <p>Al ser menos evidente que los demás, durante siglos se intentó demostrarlo a partir de los otros
+       cuatro. En el siglo XIX, <strong>Lobachevski, Bolyai, Gauss y Riemann</strong> mostraron que podía
+       negarse sin caer en contradicción, lo que dio origen a las
+       <strong>geometrías no euclidianas</strong> (hiperbólica y elíptica), fundamentales, por ejemplo,
+       en la teoría de la relatividad.</p>
+
+    <h3>3.4 Sistematización de teoremas previos</h3>
+    <p><em>Los Elementos</em> recopila y ordena resultados de matemáticos anteriores, como
+       <a class="enlace" href="#tales">Tales</a>, <a class="enlace" href="#pitagoras">Pitágoras</a>,
+       Hipócrates de Quíos, Teeteto y Eudoxo, y los enlaza en una misma cadena deductiva.
+       Entre los más conocidos figuran:</p>
+    <ul>
+        <li><strong>Teorema de Tales:</strong> los segmentos determinados por paralelas sobre dos rectas
+            concurrentes son proporcionales (Libro VI).</li>
+        <li><strong>Teorema de Pitágoras:</strong> a² + b² = c² (proposición I.47), junto con su recíproco (I.48).</li>
+        <li><strong>Infinitud de los números primos:</strong> hay más primos que cualquier cantidad dada
+            de ellos (proposición IX.20).</li>
+    </ul>
+    <p>De esta manera, resultados que antes eran independientes pasaron a formar un solo sistema coherente.</p>
+
+    <h3>3.5 Teoría de números y algoritmo de Euclides</h3>
+    <p>Los libros VII al IX tratan la aritmética. Allí aparece el <strong>algoritmo de Euclides</strong>,
+       un procedimiento para hallar el máximo común divisor (mcd) de dos números mediante divisiones
+       sucesivas. Se basa en que <strong>mcd(a, b) = mcd(b, r)</strong>, donde r es el residuo de dividir
+       a entre b; el proceso termina cuando el residuo es cero y el último divisor es el mcd.</p>
+
+    <div class="ejemplo">
+        <strong>Ejemplo: calcular mcd(252, 105).</strong><br>
+        252 = 2 · 105 + 42<br>
+        105 = 2 · 42 + 21<br>
+        42 = 2 · 21 + 0<br>
+        El último divisor distinto de cero es 21 → <strong>mcd(252, 105) = 21</strong>
+    </div>
+
+    <p>Otras aportaciones aritméticas de Euclides incluyen la prueba de que existen
+       <strong>infinitos números primos</strong> y la base de lo que hoy se conoce como
+       <strong>teorema fundamental de la aritmética</strong> (todo entero mayor que 1 se descompone
+       de forma única en factores primos). Además, sus resultados permiten generar las
+       <a class="enlace" href="#ternas">ternas pitagóricas</a> mediante la fórmula
+       a = m² − n², b = 2mn, c = m² + n².</p>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= ERATÓSTENES ================= -->
+<section id="eratostenes">
+    <h2>4. Eratóstenes de Cirene (c. 276 – 194 a. C.)</h2>
+    <p>Matemático, astrónomo, geógrafo y poeta griego, nacido en Cirene (actual Libia) y director de la
+       <strong>Biblioteca de Alejandría</strong>. Sus contemporáneos lo apodaron <em>«Beta»</em> (el segundo),
+       por destacar en muchas disciplinas sin ser el primero en ninguna; hoy se le reconoce como
+       <strong>fundador de la geografía científica</strong>.</p>
+
+    <h3>4.1 Medición de la circunferencia de la Tierra</h3>
+    <p>Eratóstenes supo que en Siena (actual Asuán), durante el solsticio de verano, al mediodía el Sol
+       iluminaba el fondo de un pozo: estaba en el <strong>cenit</strong> y los objetos verticales no
+       proyectaban sombra. Ese mismo día y a esa misma hora, en Alejandría un objeto vertical
+       (<em>gnomon</em>) sí proyectaba sombra.</p>
+
+    <p>Su razonamiento fue el siguiente:</p>
+    <ul>
+        <li>Suponiendo que el Sol está tan lejos que sus rayos llegan <strong>paralelos</strong> a la Tierra,
+            la diferencia entre ambas ciudades se debe a la <strong>curvatura</strong> del planeta.</li>
+        <li>Al medir la sombra en Alejandría obtuvo un ángulo de unos <strong>7,2°</strong>, es decir,
+            aproximadamente <strong>1/50</strong> de la circunferencia completa (360° ÷ 7,2° = 50).</li>
+        <li>Por ser ángulos alternos internos entre paralelas, ese mismo ángulo corresponde al arco entre
+            las dos ciudades medido desde el centro de la Tierra.</li>
+        <li>La distancia entre Alejandría y Siena era de unos <strong>5000 estadios</strong> (dato que,
+            según la tradición, provenía de los recorridos de las caravanas).</li>
+        <li>Aplicando la proporción entre el ángulo y el arco (base del
+            <a class="enlace" href="#teorema-tales">teorema de Tales</a>), la circunferencia completa sería
+            <strong>50 × 5000 = 250 000 estadios</strong>.</li>
+    </ul>
+
+    <div class="nota">
+        <strong>Precisión del resultado:</strong> el valor del estadio no se conoce con exactitud. Según la
+        equivalencia adoptada (entre unos 157 m y 185 m), el resultado va de unos <strong>39 000 a 46 000 km</strong>,
+        frente a los <strong>40 075 km</strong> del ecuador real. Aun con las simplificaciones del método
+        (Siena no está exactamente sobre el mismo meridiano que Alejandría y la distancia era una estimación),
+        el resultado fue notablemente cercano y demostró que la Tierra era <strong>esférica y medible con geometría</strong>.
+    </div>
+
+    <h3>4.2 La Criba de Eratóstenes</h3>
+    <p>Es un método sencillo para obtener todos los números primos menores o iguales que un número dado n.
+       Procedimiento:</p>
+    <ol>
+        <li>Escribir la lista de los números desde 2 hasta n.</li>
+        <li>Tomar el primer número no tachado (2), marcarlo como primo y tachar todos sus múltiplos.</li>
+        <li>Pasar al siguiente número no tachado (3), marcarlo como primo y tachar sus múltiplos.</li>
+        <li>Repetir el proceso. Basta hacerlo con los primos p tales que p² ≤ n, pues todo compuesto
+            menor o igual que n tiene un factor primo menor o igual que √n.</li>
+        <li>Los números que quedan sin tachar son los primos.</li>
+    </ol>
+
+    <h4>Ejemplo con n = 50</h4>
+    <p>Como √50 ≈ 7,07, solo hace falta tachar los múltiplos de 2, 3, 5 y 7.
+       En azul aparecen los primos que sobreviven (el 1 no es primo):</p>
+
+    <div class="criba" aria-label="Criba de Eratóstenes hasta 50">
+        <span>1</span><span class="primo">2</span><span class="primo">3</span><span>4</span><span class="primo">5</span>
+        <span>6</span><span class="primo">7</span><span>8</span><span>9</span><span>10</span>
+        <span class="primo">11</span><span>12</span><span class="primo">13</span><span>14</span><span>15</span>
+        <span>16</span><span class="primo">17</span><span>18</span><span class="primo">19</span><span>20</span>
+        <span>21</span><span>22</span><span class="primo">23</span><span>24</span><span>25</span>
+        <span>26</span><span>27</span><span>28</span><span class="primo">29</span><span>30</span>
+        <span class="primo">31</span><span>32</span><span>33</span><span>34</span><span>35</span>
+        <span>36</span><span class="primo">37</span><span>38</span><span>39</span><span>40</span>
+        <span class="primo">41</span><span>42</span><span class="primo">43</span><span>44</span><span>45</span>
+        <span>46</span><span class="primo">47</span><span>48</span><span>49</span><span>50</span>
+    </div>
+
+    <p><strong>Resultado:</strong> 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 y 47
+       (quince primos menores que 50). Aunque existen algoritmos más veloces, la criba y sus variantes
+       siguen usándose y enseñándose en computación por su claridad y eficiencia para rangos moderados.</p>
+
+    <h3>4.3 Cartografía y coordenadas geográficas</h3>
+    <p>En su obra <em>Geografía</em> (<em>Geographika</em>), Eratóstenes representó el mundo conocido
+       (la <em>ecúmene</em>) desde España hasta la India. Para ubicar los lugares utilizó líneas de
+       referencia: un paralelo principal que pasaba por Rodas y un meridiano principal que pasaba por
+       Alejandría, y a partir de ellos trazó otras líneas paralelas y meridianos que cruzaban ciudades
+       y accidentes geográficos conocidos.</p>
+    <p>Gracias a estas líneas y a su cálculo del tamaño de la Tierra, pudo expresar distancias y
+       posiciones de forma más sistemática que sus predecesores. Aunque su malla no era uniforme como
+       los sistemas actuales de latitud y longitud, sentó las bases que luego perfeccionarían
+       <strong>Hiparco</strong> y <strong>Ptolomeo</strong>.</p>
+
+    <h3>4.4 Geografía matemática</h3>
+    <p>Eratóstenes acuñó el término «geografía» y planteó que la descripción de la Tierra debía apoyarse
+       en la <strong>matemática</strong> y la <strong>astronomía</strong>, y no solo en relatos de viajeros.
+       Su enfoque integró la geometría, la astronomía y la medición del planeta. Otros aportes vinculados:</p>
+    <ul>
+        <li><strong>Inclinación del eje terrestre:</strong> según la tradición transmitida por Ptolomeo,
+            estimó la oblicuidad de la eclíptica en unos <strong>23°51′</strong>, muy cercana al valor
+            real (aprox. 23,4°).</li>
+        <li><strong>El mesolabio:</strong> instrumento mecánico para resolver el problema de la
+            duplicación del cubo mediante medias proporcionales.</li>
+        <li><strong>Cronología científica:</strong> intentó fijar con criterios matemáticos y astronómicos
+            las fechas de los acontecimientos históricos de Grecia.</li>
+    </ul>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= GLOSARIO ================= -->
+<section id="glosario">
+    <h2>Glosario de términos</h2>
+    <div class="tabla-scroll">
+        <table>
+            <thead>
+                <tr><th>Término</th><th>Definición</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Axioma</strong></td><td>Proposición que se admite como verdadera sin necesidad de demostración, por ser evidente en sí misma.</td></tr>
+                <tr><td><strong>Postulado</strong></td><td>Proposición no evidente que se acepta sin demostración porque resulta necesaria para construir una teoría (en Euclides, base de la geometría).</td></tr>
+                <tr><td><strong>Teorema</strong></td><td>Proposición que se demuestra de forma lógica a partir de axiomas, postulados u otros teoremas ya probados.</td></tr>
+                <tr><td><strong>Demostración</strong></td><td>Razonamiento lógico que, partiendo de premisas verdaderas, prueba la validez de un enunciado.</td></tr>
+                <tr><td><strong>Geometría euclidiana</strong></td><td>Sistema geométrico basado en los cinco postulados de Euclides, válido en el plano y en el espacio «plano» (no curvo).</td></tr>
+                <tr><td><strong>Proporción</strong></td><td>Igualdad entre dos razones (relación de tamaño entre magnitudes).</td></tr>
+                <tr><td><strong>Semejanza</strong></td><td>Relación entre figuras que tienen la misma forma, aunque distinto tamaño (sus ángulos son iguales y sus lados proporcionales).</td></tr>
+                <tr><td><strong>Congruencia</strong></td><td>Relación entre figuras que tienen la misma forma y el mismo tamaño.</td></tr>
+                <tr><td><strong>Hipotenusa</strong></td><td>Lado más largo de un triángulo rectángulo, opuesto al ángulo recto.</td></tr>
+                <tr><td><strong>Cateto</strong></td><td>Cada uno de los dos lados que forman el ángulo recto en un triángulo rectángulo.</td></tr>
+                <tr><td><strong>Número irracional</strong></td><td>Número que no puede expresarse como fracción de dos enteros (ejemplo: √2).</td></tr>
+                <tr><td><strong>Terna pitagórica</strong></td><td>Conjunto de tres números enteros que satisfacen la relación a² + b² = c² (ejemplo: 3, 4, 5).</td></tr>
+                <tr><td><strong>Circunferencia</strong></td><td>Línea curva cerrada cuyos puntos equidistan de un centro.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= CONCEPTOS CLAVE ================= -->
+<section id="conceptos">
+    <h2>Conceptos clave</h2>
+
+    <h3>a) Los Elementos y el método axiomático (Euclides)</h3>
+    <p>Obra en 13 libros que organiza toda la geometría conocida en su época mediante definiciones,
+       postulados y teoremas demostrados lógicamente. Es el primer gran ejemplo de
+       <strong>sistema axiomático-deductivo</strong> en la historia de las matemáticas.</p>
+
+    <h3>b) Los cinco postulados de Euclides</h3>
+    <ol>
+        <li>Por dos puntos distintos pasa una única recta.</li>
+        <li>Un segmento de recta puede prolongarse indefinidamente.</li>
+        <li>Se puede trazar una circunferencia con cualquier centro y radio.</li>
+        <li>Todos los ángulos rectos son iguales entre sí.</li>
+        <li><strong>Postulado de las paralelas:</strong> por un punto exterior a una recta pasa una única paralela a ella.</li>
+    </ol>
+
+    <h3>c) Teorema de Tales</h3>
+    <p>Si dos o más rectas paralelas son cortadas por dos rectas transversales, los segmentos que se
+       forman son proporcionales. Es la base de la <strong>semejanza de triángulos</strong> y se aplica
+       en escalas, mapas y cálculo de distancias inaccesibles (como Tales al medir la altura de las
+       pirámides usando sombras).</p>
+
+    <h3>d) Teorema de Pitágoras</h3>
+    <p>En todo triángulo rectángulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados
+       de los catetos: <strong>a² + b² = c²</strong>. Fundamental para el cálculo de distancias, la
+       trigonometría y la geometría analítica.</p>
+
+    <h3>e) Medición de la circunferencia terrestre (Eratóstenes)</h3>
+    <p>Utilizando la diferencia de ángulos de sombra entre dos ciudades (Alejandría y Siena) situadas
+       sobre un mismo meridiano, y la distancia entre ellas, Eratóstenes calculó por proporciones
+       geométricas la longitud de la circunferencia de la Tierra con notable precisión, sin salir de Egipto.</p>
+
+    <h3>f) Relación entre las cuatro aportaciones</h3>
+    <p>Estos cuatro pensadores construyen, en conjunto, la base de la geometría clásica:
+       <a class="enlace" href="#tales">Tales</a> introduce la demostración racional y la semejanza;
+       <a class="enlace" href="#pitagoras">Pitágoras</a> y su escuela vinculan geometría y números;
+       <a class="enlace" href="#euclides">Euclides</a> organiza y sistematiza todo el conocimiento
+       geométrico en un cuerpo axiomático; y <a class="enlace" href="#eratostenes">Eratóstenes</a>
+       aplica esos principios geométricos a un problema científico real: medir el planeta.</p>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= BIOGRAFÍAS ================= -->
+<section id="biografias">
+    <h2>Biografías (orden cronológico)</h2>
+
+    <h3>a) Tales de Mileto (c. 624 – 546 a. C.)</h3>
+    <p><strong>Significado del nombre:</strong> «Tales» (Θαλῆς) proviene del griego y se relaciona con
+       el verbo <em>thállein</em>, «florecer» o «brotar»; puede interpretarse como «el que florece»
+       o «el floreciente».</p>
+    <p><strong>Biografía:</strong> Nació en Mileto, ciudad griega de Asia Menor (actual Turquía), y es
+       considerado el primero de los Siete Sabios de Grecia y el fundador de la filosofía y la ciencia
+       occidentales. Viajó a Egipto, donde entró en contacto con los conocimientos geométricos y
+       astronómicos de los sacerdotes egipcios. Fue el primero en intentar explicar los fenómenos
+       naturales sin recurrir a mitos, buscando causas racionales.</p>
+    <p><strong>Aportaciones a las matemáticas:</strong></p>
+    <ul>
+        <li>Introdujo el razonamiento deductivo en la geometría, es decir, la idea de demostrar
+            afirmaciones en lugar de solo observarlas.</li>
+        <li>Formuló el teorema de Tales, sobre la proporcionalidad de segmentos determinados por rectas
+            paralelas cortadas por transversales.</li>
+        <li>Calculó la altura de las pirámides de Egipto comparando la longitud de su sombra con la de un
+            bastón vertical, aplicando semejanza de triángulos.</li>
+        <li>Predijo un eclipse solar, mostrando que los fenómenos celestes siguen patrones calculables.</li>
+    </ul>
+
+    <h3>b) Pitágoras de Samos (c. 570 – 495 a. C.)</h3>
+    <p><strong>Significado del nombre:</strong> «Pitágoras» (Πυθαγόρας) se compone de <em>Pythía</em>
+       (referente al oráculo de Delfos, Pito) y <em>agora</em> (asamblea o proclamación), por lo que
+       suele traducirse como «el que fue anunciado por la Pitía» o «proclamado por el oráculo».</p>
+    <p><strong>Biografía:</strong> Nació en la isla de Samos, Grecia. Viajó por Egipto y posiblemente
+       Babilonia antes de establecerse en Crotona (sur de Italia), donde fundó una escuela
+       filosófico-religiosa conocida como los pitagóricos. Esta comunidad consideraba que los números
+       eran la esencia de todas las cosas y practicaba un modo de vida basado en normas éticas,
+       matemáticas y místicas. Gran parte de su obra se transmitió de forma oral y colectiva a través
+       de sus discípulos.</p>
+    <p><strong>Aportaciones a las matemáticas:</strong></p>
+    <ul>
+        <li>Se le atribuye el teorema de Pitágoras (a² + b² = c²), aunque civilizaciones anteriores ya
+            conocían casos particulares; su escuela ofreció una demostración general.</li>
+        <li>Desarrolló el estudio de los números y sus propiedades: pares, impares, primos, perfectos y figurados.</li>
+        <li>Descubrió relaciones numéricas en la música (proporciones entre longitudes de cuerda y notas musicales).</li>
+        <li>Contribuyó al descubrimiento de los números irracionales (como √2), a partir del análisis
+            de la diagonal del cuadrado.</li>
+        <li>Impulsó la idea de que las matemáticas explican y describen el orden del universo.</li>
+    </ul>
+
+    <h3>c) Euclides de Alejandría (c. 325 – 265 a. C.)</h3>
+    <p><strong>Significado del nombre:</strong> «Euclides» (Εὐκλείδης) proviene del griego <em>eu</em>
+       («bueno») y <em>kleos</em> («gloria» o «fama»), por lo que puede traducirse como «de buena fama»
+       o «de gloria buena».</p>
+    <p><strong>Biografía:</strong> Se sabe muy poco de su vida personal. Se cree que estudió en Atenas,
+       posiblemente en la Academia platónica, y que desarrolló su labor principal en Alejandría, Egipto,
+       durante el reinado de Ptolomeo I. Fundó allí una escuela de matemáticas. Es conocido como
+       «el padre de la geometría» gracias a su obra cumbre, <em>Los Elementos</em>, un tratado de 13 libros
+       que recopiló, ordenó y demostró de manera sistemática el conocimiento matemático de su época.</p>
+    <p><strong>Aportaciones a las matemáticas:</strong></p>
+    <ul>
+        <li>Escribió <em>Los Elementos</em>, la obra matemática más influyente y estudiada de la historia,
+            base de la enseñanza de la geometría durante más de 2000 años.</li>
+        <li>Estableció el método axiomático: partir de definiciones, postulados y axiomas para deducir
+            teoremas mediante demostraciones lógicas rigurosas.</li>
+        <li>Formuló los cinco postulados que dan origen a la geometría euclidiana (geometría del plano).</li>
+        <li>Sistematizó teoremas previos (incluyendo los de Tales y Pitágoras) dentro de una estructura
+            lógica coherente.</li>
+        <li>Desarrolló también resultados de teoría de números, como el algoritmo de Euclides para el
+            máximo común divisor.</li>
+    </ul>
+
+    <h3>d) Eratóstenes de Cirene (c. 276 – 194 a. C.)</h3>
+    <p><strong>Significado del nombre:</strong> «Eratóstenes» (Ἐρατοσθένης) deriva de <em>Eros</em>
+       (nombre del dios del amor) y <em>sthénos</em> («fuerza»), interpretándose aproximadamente como
+       «fortaleza de Eros» o «fuerte por amor».</p>
+    <p><strong>Biografía:</strong> Nació en Cirene (norte de África, actual Libia) y estudió en Atenas
+       y Alejandría. Fue nombrado director de la famosa Biblioteca de Alejandría por el faraón
+       Ptolomeo III, cargo que ocupó durante décadas. Fue un erudito de conocimientos muy amplios
+       —matemático, geógrafo, astrónomo, filósofo y poeta—, razón por la cual sus contemporáneos lo
+       apodaron «Beta» (segundo), por destacar en muchas disciplinas sin ser considerado el máximo
+       experto en ninguna en particular.</p>
+    <p><strong>Aportaciones a las matemáticas:</strong></p>
+    <ul>
+        <li>Calculó con notable precisión la circunferencia de la Tierra, comparando la longitud de las
+            sombras al mediodía en Alejandría y Siena (hoy Asuán), aplicando proporciones geométricas
+            basadas en el teorema de Tales.</li>
+        <li>Creó la Criba de Eratóstenes, un método aún utilizado para identificar números primos.</li>
+        <li>Elaboró uno de los primeros mapas del mundo conocido, introduciendo un sistema de coordenadas
+            geográficas (paralelos y meridianos).</li>
+        <li>Contribuyó a la geografía matemática, uniendo geometría, astronomía y medición del planeta.</li>
+    </ul>
+
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= LÍNEA DE TIEMPO ================= -->
+<section id="linea">
+    <h2>Línea de tiempo resumida</h2>
+    <ul class="timeline">
+        <li>
+            <span class="fecha">Tales de Mileto · c. 624–546 a. C.</span>
+            Semejanza y deducción geométrica.
+        </li>
+        <li>
+            <span class="fecha">Pitágoras de Samos · c. 570–495 a. C.</span>
+            Teorema de Pitágoras, teoría de números, música y números irracionales.
+        </li>
+        <li>
+            <span class="fecha">Euclides de Alejandría · c. 325–265 a. C.</span>
+            <em>Los Elementos</em> y el método axiomático.
+        </li>
+        <li>
+            <span class="fecha">Eratóstenes de Cirene · c. 276–194 a. C.</span>
+            Medición de la Tierra y criba de números primos.
+        </li>
+    </ul>
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+<!-- ================= RECURSOS ================= -->
+<section id="recursos">
+    <h2>Para saber más</h2>
+    <p>Enlaces externos de consulta (se abren en una pestaña nueva):</p>
+    <ul>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Geometr%C3%ADa_euclidiana" target="_blank" rel="noopener">Geometría euclidiana</a> — panorama general del sistema.</li>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Elementos_de_Euclides" target="_blank" rel="noopener">Los Elementos de Euclides</a> — estructura de los 13 libros.</li>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Teorema_de_Tales" target="_blank" rel="noopener">Teorema de Tales</a> — proporcionalidad y semejanza.</li>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Teorema_de_Pit%C3%A1goras" target="_blank" rel="noopener">Teorema de Pitágoras</a> — demostraciones y aplicaciones.</li>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Terna_pitag%C3%B3rica" target="_blank" rel="noopener">Ternas pitagóricas</a> — primitivas, derivadas y fórmula de Euclides.</li>
+        <li><a class="enlace" href="https://es.wikipedia.org/wiki/Criba_de_Erat%C3%B3stenes" target="_blank" rel="noopener">Criba de Eratóstenes</a> — algoritmo para hallar primos.</li>
+    </ul>
+    <a class="volver" href="#inicio">↑ Volver al inicio</a>
+</section>
+
+</main>
+
+<!-- ================= PIE ================= -->
+<footer>
+    <p><strong>Unidad 2 · Geometría euclidiana</strong></p>
+    <p>Aportes de Tales de Mileto, Pitágoras de Samos, Euclides de Alejandría y Eratóstenes de Cirene.</p>
+    <p style="margin-top:.5rem;"><a href="#inicio">Volver al inicio de la página ↑</a></p>
+</footer>
+
+<button id="subir" title="Volver arriba" aria-label="Volver arriba">↑</button>
+
+<script>
+    const boton = document.getElementById('subir');
+
+    window.addEventListener('scroll', () => {
+        boton.style.display = window.scrollY > 400 ? 'block' : 'none';
+    });
+
+    boton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Estado inicial
+    boton.style.display = 'none';
+</script>
+
+</body>
+</html>
